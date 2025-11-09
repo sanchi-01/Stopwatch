@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stopwatch</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    #time {
+      font-size: 80px;
+      color: orange;
+      margin-bottom: 30px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 50%;
+      margin: 10px;
+      cursor: pointer;
+      background-color: #333;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+
+    #start.stop {
+      background-color: red;
+    }
+
+    ul {
+      list-style: none;
+      margin-top: 20px;
+      padding: 0;
+    }
+
+    li {
+      font-size: 20px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <label id="time">00:00:00</label><br>
+    <button id="lap">Lap</button>
+    <button id="start">Start</button>
+    <ul id="laps"></ul>
+  </div>
+
+  <script>
+    let startBtn = document.getElementById("start");
+    let lapBtn = document.getElementById("lap");
+    let timeLabel = document.getElementById("time");
+    let lapsList = document.getElementById("laps");
+
+    let startTime, updatedTime, difference = 0, tInterval;
+    let running = false;
+
+    function startTimer() {
+      if (!running) {
+        startTime = new Date().getTime() - difference;
+        tInterval = setInterval(updateTime, 10);
+        running = true;
+        startBtn.textContent = "Stop";
+        startBtn.classList.add("stop");
+      } else {
+        clearInterval(tInterval);
+        running = false;
+        startBtn.textContent = "Start";
+        startBtn.classList.remove("stop");
+      }
+    }
+
+    function updateTime() {
+      updatedTime = new Date().getTime() - startTime;
+      let ms = Math.floor((updatedTime % 1000) / 10);
+      let s = Math.floor((updatedTime / 1000) % 60);
+      let m = Math.floor((updatedTime / (1000 * 60)) % 60);
+
+      timeLabel.textContent =
+        (m < 10 ? "0" + m : m) + ":" +
+        (s < 10 ? "0" + s : s) + ":" +
+        (ms < 10 ? "0" + ms : ms);
+    }
+
+    function lapReset() {
+      if (running) {
+        let li = document.createElement("li");
+        li.textContent = timeLabel.textContent;
+        lapsList.prepend(li);
+      } else {
+        clearInterval(tInterval);
+        difference = 0;
+        timeLabel.textContent = "00:00:00";
+        lapsList.innerHTML = "";
+      }
+    }
+
+    startBtn.addEventListener("click", startTimer);
+    lapBtn.addEventListener("click", lapReset);
+  </script>
+</body>
+</html>
